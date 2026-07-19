@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simple GitHub README Generator</title>
+
+<style>
+body{
+    font-family:system-ui,sans-serif;
+    max-width:1000px;
+    margin:40px auto;
+    background:#f6f8fa;
+    padding:20px;
+}
+h1{margin-top:0}
+input,select,button{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    font-size:15px;
+}
+button{
+    cursor:pointer;
+}
+pre{
+    background:#0d1117;
+    color:#c9d1d9;
+    padding:20px;
+    overflow:auto;
+    border-radius:8px;
+    white-space:pre-wrap;
+}
+.card{
+    background:white;
+    padding:15px;
+    border-radius:8px;
+    margin:10px 0;
+}
+small{color:#666;}
+</style>
+</head>
+<body>
+
+<h1>GitHub README Generator</h1>
+
+<input id="user" placeholder="GitHub Username">
+
+<button onclick="loadRepos()">Load Repositories</button>
+
+<select id="repoList"></select>
+
+<button onclick="generate()">Generate README</button>
+
+<div id="info"></div>
+
+<pre id="output"></pre>
+
+<script>
+
+let repos=[];
+
+async function loadRepos(){
+
+const user=document.getElementById("user").value.trim();
+
+if(!user){
+alert("GitHubユーザー名を入力してください");
+return;
+}
+
+const res=await fetch(`https://api.github.com/users/${user}/repos?per_page=100`);
+
+if(!res.ok){
+alert("取得できませんでした");
+return;
+}
+
+repos=await res.json();
+
+const list=document.getElementById("repoList");
+
+list.innerHTML=repos
+.filter(r=>!r.fork)
+.map(r=>`<option value="${r.name}">${r.name}</option>`)
+.join("");
+
+}
+
+async function generate(){
+
+const user=document.getElementById("user").value.trim();
+const repo=document.getElementById("repoList").value;
+
+if(!repo)return;
+
+const repoInfo=repos.find(r=>r.name===repo);
+
+const treeRes=await fetch(
+`https://api.github.com/repos/${user}/${repo}/git/trees/${repoInfo.default_branch}?recursive=1`
+);
+
+const tree=await treeRes.json();
+
+const files=tree.tree.map(f=>f.path);
+
+const stack=[];
+
+const has=f=>files.some(x=>x.toLowerCase()==f.toLowerCase());
+
+const hasExt=e=>files.some(x=>x.endsWith(e));
+
+if(has("package.json")) stack.push("Node.js");
+if(has("requirements.txt")) stack.push("Python");
+if(has("Cargo.toml")) stack.push("Rust");
+if(has("go.mod")) stack.push("Go");
+if(has("composer.json")) stack.push("PHP");
+if(has("pom.xml")) stack.push("Java");
+if(has("Dockerfile")) stack.push("Docker");
+
+if(has("vite.config.js")||has("vite.config.ts")) stack.push("Vite");
+if(has("next.config.js")) stack.push("Next.js");
+if(has("nuxt.config.ts")) stack.push("Nuxt");
+if(has("angular.json")) stack.push("Angular");
+
+if(hasExt(".html")) stack.push("HTML");
+if(hasExt(".css")) stack.push("CSS");
+if(hasExt(".js")) stack.push("JavaScript");
+if(hasExt(".ts")) stack.push("TypeScript");
+if(hasExt(".py")) stack.push("Python");
+if(hasExt(".java")) stack.push("Java");
+if(hasExt(".cpp")) stack.push("C++");
+if(hasExt(".cs")) stack.push("C#");
+
+const unique=[...new Set(stack)];
+
+let projectType="Application";
+
+if(has("index.html")&&!has("package.json"))
+projectType="Static Website";
+
+if(has("package.json"))
+projectType="Node.js Project";
+
+if(has("requirements.txt"))
+projectType="Python Project";
+
+const md=`# ${repoInfo.name}
+
+${repoInfo.description||"Project description"}
+
+## Overview
+
+This repository contains a ${projectType.toLowerCase()}.
+
+## Tech Stack
+
+${unique.map(x=>"- "+x).join("\n")||"- Unknown"}
+
+## Repository
+
+${repoInfo.html_url}
+
+## Statistics
+
+- ⭐ Stars: ${repoInfo.stargazers_count}
+- 🍴 Forks: ${repoInfo.forks_count}
+- 👀 Watchers: ${repoInfo.watchers_count}
+
+## File Count
+
+${files.length}
+
+## Main Files
+
+${files.slice(0,25).map(f=>"- "+f).join("\n")}
+
+## Installation
+
+See repository documentation for installation instructions.
+
+## License
+
+${repoInfo.license?repoInfo.license.name:"Not specified"}
+
+---
+Generated automatically.
+`;
+
+document.getElementById("output").textContent=md;
+
+document.getElementById("info").innerHTML=`
+<div class="card">
+<b>${repoInfo.name}</b><br>
+${repoInfo.description||"No description"}<br><br>
+
+⭐ ${repoInfo.stargazers_count}
+　
+🍴 ${repoInfo.forks_count}
+　
+📁 ${files.length} files
+<br><br>
+
+<small>
+Detected:
+${unique.join(", ")||"Unknown"}
+</small>
+
+</div>
+`;
+
+}
+
+document.addEventListener("keydown",e=>{
+if(e.ctrlKey&&e.key==="c") return;
+});
+
+</script>
+
+</body>
+</html>
