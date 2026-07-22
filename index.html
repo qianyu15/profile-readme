@@ -1,718 +1,816 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+  <title>GitHub README Generator</title>
 
-    <title>Profile README Generator</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body
-    class="
-        min-h-screen
-        bg-[#0d1117]
-        text-[#f0f6fc]
-        font-sans
-        flex
-        items-center
-        justify-center
-        p-6
-    "
->
+<body class="min-h-screen bg-gray-50 text-gray-900">
 
-    <main class="w-full max-w-[760px]">
+  <main class="max-w-6xl mx-auto px-6 py-12">
 
-        <h1
-            class="
-                mb-2
-                text-3xl
-                font-bold
-                tracking-tight
-                sm:text-4xl
-            "
+    <!-- Header -->
+    <header class="mb-10">
+
+      <h1 class="text-4xl font-bold tracking-tight">
+        GitHub README Generator
+      </h1>
+
+      <p class="mt-3 text-gray-600">
+        GitHubプロフィールから情報を取得して、実用的なREADME.mdを自動生成します。
+      </p>
+
+    </header>
+
+
+    <!-- Input Section -->
+    <section
+      class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm"
+    >
+
+      <label
+        for="username"
+        class="block text-sm font-medium text-gray-700 mb-2"
+      >
+        GitHub Username
+      </label>
+
+
+      <div class="flex flex-col sm:flex-row gap-3">
+
+        <input
+          id="username"
+          type="text"
+          placeholder="例: qianyu15"
+          autocomplete="off"
+          class="flex-1 px-4 py-3 border border-gray-300 rounded-xl outline-none transition focus:ring-2 focus:ring-black"
+        />
+
+
+        <button
+          id="generateBtn"
+          type="button"
+          class="px-6 py-3 rounded-xl bg-black text-white font-medium hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
-            Profile README Generator
-        </h1>
+          Generate README
+        </button>
 
-        <p
-            class="
-                mb-8
-                text-[#8b949e]
-            "
-        >
-            GitHubユーザー名を入力するだけでプロフィールREADMEを生成します。
-        </p>
+      </div>
 
-        <form
-            id="form"
-            class="
-                mb-6
-                flex
-                flex-col
-                gap-3
-                sm:flex-row
-            "
-        >
 
-            <input
-                id="username"
-                type="text"
-                placeholder="GitHub username"
-                autocomplete="off"
-                required
-                class="
-                    min-w-0
-                    flex-1
-                    rounded-lg
-                    border
-                    border-[#30363d]
-                    bg-[#161b22]
-                    px-4
-                    py-3.5
-                    text-base
-                    text-[#f0f6fc]
-                    outline-none
-                    placeholder:text-[#8b949e]
-                    focus:border-[#58a6ff]
-                "
+      <p
+        id="status"
+        class="mt-4 text-sm text-gray-500"
+      ></p>
+
+    </section>
+
+
+    <!-- Result Section -->
+    <section
+      id="resultSection"
+      class="hidden mt-8"
+    >
+
+      <!-- Header -->
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4"
+      >
+
+        <h2 class="text-2xl font-bold">
+          Generated README.md
+        </h2>
+
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2">
+
+
+          <!-- Copy Button -->
+          <button
+            id="copyBtn"
+            type="button"
+            aria-label="Copy README"
+            title="Copy README"
+            class="group w-11 h-11 flex items-center justify-center rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 hover:text-black transition"
+          >
+
+            <!-- Copy Icon -->
+            <svg
+              id="copyIcon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="21"
+              height="21"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
             >
 
-            <button
-                type="submit"
-                class="
-                    rounded-lg
-                    bg-[#238636]
-                    px-5
-                    py-3.5
-                    text-sm
-                    font-semibold
-                    text-white
-                    transition
-                    hover:bg-[#2ea043]
-                    disabled:cursor-not-allowed
-                    disabled:opacity-60
-                "
-            >
-                Generate
-            </button>
+              <rect
+                width="13"
+                height="13"
+                x="9"
+                y="9"
+                rx="2"
+                ry="2"
+              />
 
-        </form>
+              <path
+                d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+              />
 
-        <p
-            id="status"
-            class="
-                mb-4
-                min-h-6
-                text-[#8b949e]
-            "
-        ></p>
+            </svg>
 
-        <div
-            id="actions"
-            class="
-                mb-6
-                hidden
-                flex-wrap
-                gap-3
-            "
-        >
 
-            <!-- Copy README -->
-            <button
-                id="copy"
-                type="button"
-                aria-label="Copy README"
-                title="Copy README"
-                class="
-                    flex
-                    h-11
-                    w-11
-                    items-center
-                    justify-center
-                    rounded-lg
-                    bg-[#6e40c9]
-                    text-white
-                    transition
-                    hover:bg-[#8957e5]
-                    focus:outline-none
-                    focus:ring-2
-                    focus:ring-[#8957e5]
-                "
+            <!-- Check Icon -->
+            <svg
+              id="checkIcon"
+              class="hidden"
+              xmlns="http://www.w3.org/2000/svg"
+              width="21"
+              height="21"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
             >
 
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="h-5 w-5"
-                    aria-hidden="true"
-                >
-                    <rect
-                        width="14"
-                        height="14"
-                        x="8"
-                        y="8"
-                        rx="2"
-                        ry="2"
-                    />
+              <path d="M20 6 9 17l-5-5" />
 
-                    <path
-                        d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                    />
-                </svg>
+            </svg>
 
-            </button>
+          </button>
 
-            <!-- Download README -->
-            <button
-                id="download"
-                type="button"
-                aria-label="Download README.md"
-                title="Download README.md"
-                class="
-                    flex
-                    h-11
-                    w-11
-                    items-center
-                    justify-center
-                    rounded-lg
-                    bg-[#1f6feb]
-                    text-white
-                    transition
-                    hover:bg-[#388bfd]
-                    focus:outline-none
-                    focus:ring-2
-                    focus:ring-[#388bfd]
-                "
+
+          <!-- Download Button -->
+          <button
+            id="downloadBtn"
+            type="button"
+            aria-label="Download README.md"
+            title="Download README.md"
+            class="w-11 h-11 flex items-center justify-center rounded-xl bg-black text-white hover:bg-gray-800 transition"
+          >
+
+            <!-- Download Icon -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="21"
+              height="21"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
             >
 
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="h-5 w-5"
-                    aria-hidden="true"
-                >
-                    <path
-                        d="M12 3v12"
-                    />
+              <path
+                d="M12 3v12"
+              />
 
-                    <path
-                        d="m7 10 5 5 5-5"
-                    />
+              <path
+                d="m7 10 5 5 5-5"
+              />
 
-                    <path
-                        d="M5 21h14"
-                    />
-                </svg>
+              <path
+                d="M5 21h14"
+              />
 
-            </button>
+            </svg>
+
+          </button>
 
         </div>
 
+      </div>
+
+
+      <!-- README Preview -->
+      <div
+        class="bg-gray-900 rounded-2xl overflow-hidden shadow-lg"
+      >
+
+        <!-- Window Header -->
+        <div
+          class="flex items-center gap-2 px-4 py-3 bg-gray-800"
+        >
+
+          <div
+            class="w-3 h-3 rounded-full bg-red-400"
+          ></div>
+
+          <div
+            class="w-3 h-3 rounded-full bg-yellow-400"
+          ></div>
+
+          <div
+            class="w-3 h-3 rounded-full bg-green-400"
+          ></div>
+
+
+          <span
+            class="ml-3 text-sm text-gray-400"
+          >
+            README.md
+          </span>
+
+        </div>
+
+
+        <!-- Code -->
         <pre
-            id="preview"
-            class="
-                hidden
-                max-h-[600px]
-                overflow-auto
-                whitespace-pre-wrap
-                break-words
-                rounded-lg
-                border
-                border-[#30363d]
-                bg-[#161b22]
-                p-5
-                font-mono
-                text-sm
-                leading-relaxed
-                text-[#c9d1d9]
-            "
+          id="readmePreview"
+          class="p-6 overflow-x-auto text-sm leading-7 text-gray-100 whitespace-pre-wrap"
         ></pre>
 
-    </main>
+      </div>
 
-    <script>
+    </section>
 
-        const form =
-            document.querySelector("#form");
+  </main>
 
-        const usernameInput =
-            document.querySelector("#username");
 
-        const status =
-            document.querySelector("#status");
+  <script>
 
-        const preview =
-            document.querySelector("#preview");
+    const usernameInput =
+      document.getElementById("username");
 
-        const actions =
-            document.querySelector("#actions");
+    const generateBtn =
+      document.getElementById("generateBtn");
 
-        const copyButton =
-            document.querySelector("#copy");
+    const copyBtn =
+      document.getElementById("copyBtn");
 
-        const downloadButton =
-            document.querySelector("#download");
+    const downloadBtn =
+      document.getElementById("downloadBtn");
 
-        let generatedReadme =
-            "";
+    const copyIcon =
+      document.getElementById("copyIcon");
 
-        const headers = {
+    const checkIcon =
+      document.getElementById("checkIcon");
 
-            Accept:
-                "application/vnd.github+json",
+    const resultSection =
+      document.getElementById("resultSection");
 
-            "X-GitHub-Api-Version":
-                "2022-11-28"
+    const readmePreview =
+      document.getElementById("readmePreview");
 
-        };
+    const status =
+      document.getElementById("status");
 
-        async function githubApi(
-            endpoint
-        ) {
 
-            const response =
-                await fetch(
-                    `https://api.github.com${endpoint}`,
-                    {
-                        headers
-                    }
-                );
+    let generatedReadme = "";
 
-            if (!response.ok) {
 
-                let message =
-                    "GitHub API Error";
+    /*
+    |--------------------------------------------------------------------------
+    | GitHub Account Age
+    |--------------------------------------------------------------------------
+    */
 
-                try {
+    function calculateAccountAge(createdAt) {
 
-                    const error =
-                        await response.json();
+      const createdDate =
+        new Date(createdAt);
 
-                    message =
-                        error.message ||
-                        message;
+      const now =
+        new Date();
 
-                } catch {
-                    // JSONではない場合
-                }
 
-                throw new Error(
-                    `${response.status}: ${message}`
-                );
+      let years =
+        now.getFullYear() -
+        createdDate.getFullYear();
 
-            }
 
-            return response.json();
+      const hasNotReachedAnniversary =
+        now.getMonth() < createdDate.getMonth() ||
+        (
+          now.getMonth() === createdDate.getMonth() &&
+          now.getDate() < createdDate.getDate()
+        );
+
+
+      if (hasNotReachedAnniversary) {
+
+        years--;
+
+      }
+
+
+      return Math.max(years, 0);
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Text Escape
+    |--------------------------------------------------------------------------
+    */
+
+    function escapeMarkdown(text = "") {
+
+      return text
+        .replace(/\r?\n/g, " ")
+        .trim();
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | README Generator
+    |--------------------------------------------------------------------------
+    */
+
+    function generateReadme(user, repos) {
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | GitHub登録年数
+      |--------------------------------------------------------------------------
+      */
+
+      const accountAgeYears =
+        calculateAccountAge(
+          user.created_at
+        );
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | 実務経験年数として表示
+      |--------------------------------------------------------------------------
+      */
+
+      const practicalExperience =
+        accountAgeYears === 1
+          ? "1 year"
+          : `${accountAgeYears} years`;
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | Skills
+      |--------------------------------------------------------------------------
+      */
+
+      const skills =
+        new Set();
+
+
+      repos.forEach(repo => {
+
+        if (repo.language) {
+
+          skills.add(
+            repo.language
+          );
 
         }
 
-        function calculateAccountAge(
-            createdAt
-        ) {
+      });
 
-            const created =
-                new Date(
-                    createdAt
-                );
 
-            const now =
-                new Date();
+      const skillList =
+        skills.size > 0
 
-            let years =
-                now.getFullYear() -
-                created.getFullYear();
+          ? [...skills]
+              .sort()
+              .map(skill => `- ${skill}`)
+              .join("\n")
 
-            const anniversary =
-                new Date(
-                    now.getFullYear(),
-                    created.getMonth(),
-                    created.getDate()
-                );
+          : "- No language information available";
 
-            if (
-                now <
-                anniversary
-            ) {
 
-                years--;
+      /*
+      |--------------------------------------------------------------------------
+      | Projects
+      |--------------------------------------------------------------------------
+      */
 
-            }
+      const projectList =
+        repos.length > 0
 
-            return years;
+          ? repos
+              .map(repo => {
 
-        }
+                const description =
+                  escapeMarkdown(
+                    repo.description ||
+                    "No description provided."
+                  );
 
-        async function generateReadme(
-            username
-        ) {
 
-            const [
-
-                user,
-
-                repositories
-
-            ] = await Promise.all([
-
-                githubApi(
-                    `/users/${username}`
-                ),
-
-                githubApi(
-                    `/users/${username}/repos?per_page=100&sort=updated`
-                )
-
-            ]);
-
-            const projects =
-                repositories.filter(
-                    repository =>
-                        !repository.fork
-                );
-
-            const languages =
-                new Set();
-
-            for (
-                const repository
-                of projects
-            ) {
-
-                const language =
-                    repository.language;
-
-                if (
-                    language
-                ) {
-
-                    languages.add(
-                        language
-                    );
-
-                }
-
-            }
-
-            const skills =
-                [
-                    ...languages
-                ]
-
-                    .map(
-                        language =>
-                            `- ${language}`
-                    )
-
-                    .join(
-                        "\n"
-                    );
-
-            const projectsMarkdown =
-                projects
-
-                    .map(
-                        repository => {
-
-                            const description =
-                                repository.description ||
-                                "説明なし";
-
-                            return `### ${repository.name}
+                return `### ${repo.name}
 
 ${description}
 
-[View Repository](${repository.html_url})`;
+[View Repository](${repo.html_url})`;
 
-                        }
-                    )
+              })
+              .join("\n\n")
 
-                    .join(
-                        "\n\n"
-                    );
+          : "No public repositories found.";
 
-            const contact = [
 
-                `- GitHub: [${user.login}](${user.html_url})`,
+      /*
+      |--------------------------------------------------------------------------
+      | README
+      |--------------------------------------------------------------------------
+      */
 
-                user.email
+      return `# Hi, I am ${user.name || user.login}
 
-                    ? `- Email: ${user.email}`
+${escapeMarkdown(
+  user.bio ||
+  "I am a developer who enjoys building software."
+)}
 
-                    : null
-
-            ]
-
-                .filter(
-                    Boolean
-                )
-
-                .join(
-                    "\n"
-                );
-
-            const accountAgeYears =
-                calculateAccountAge(
-                    user.created_at
-                );
-
-            return `# Hi I am ${user.name || user.login}
-
-${user.bio || ""}
-
-I have been on GitHub for ${accountAgeYears} years.
+I have ${practicalExperience} of practical experience.
 
 ## Skills
 
-${skills || "なし"}
+${skillList}
 
 ## Projects
 
-${projectsMarkdown || "プロジェクトなし"}
+${projectList}
 
 ## Contact
 
-${contact}
+- GitHub: [@${user.login}](${user.html_url})
+${user.email ? `- Email: ${user.email}` : ""}
 `;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | GitHub API
+    |--------------------------------------------------------------------------
+    */
+
+    async function fetchGitHubData(username) {
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | User
+      |--------------------------------------------------------------------------
+      */
+
+      const userResponse =
+        await fetch(
+          `https://api.github.com/users/${encodeURIComponent(username)}`
+        );
+
+
+      if (!userResponse.ok) {
+
+        throw new Error(
+          "GitHub user not found."
+        );
+
+      }
+
+
+      const user =
+        await userResponse.json();
+
+
+      /*
+      |--------------------------------------------------------------------------
+      | Repositories
+      |--------------------------------------------------------------------------
+      */
+
+      const reposResponse =
+        await fetch(
+          `https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated`
+        );
+
+
+      if (!reposResponse.ok) {
+
+        throw new Error(
+          "Failed to fetch repositories."
+        );
+
+      }
+
+
+      const repos =
+        await reposResponse.json();
+
+
+      return {
+        user,
+        repos
+      };
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Generate
+    |--------------------------------------------------------------------------
+    */
+
+    generateBtn.addEventListener(
+      "click",
+      async () => {
+
+
+        const username =
+          usernameInput.value.trim();
+
+
+        if (!username) {
+
+          status.textContent =
+            "GitHub usernameを入力してください。";
+
+          return;
 
         }
 
-        form.addEventListener(
-            "submit",
-            async event => {
 
-                event.preventDefault();
+        generateBtn.disabled =
+          true;
 
-                const username =
-                    usernameInput.value.trim();
 
-                if (
-                    !username
-                ) {
+        generateBtn.textContent =
+          "Generating...";
 
-                    return;
 
-                }
+        status.textContent =
+          "GitHubからプロフィール情報を取得中...";
 
-                status.textContent =
-                    "GitHubからプロフィールを取得中...";
 
-                status.classList.remove(
-                    "text-[#f85149]"
-                );
+        try {
 
-                preview.classList.add(
-                    "hidden"
-                );
 
-                actions.classList.add(
-                    "hidden"
-                );
+          const {
+            user,
+            repos
+          } =
+            await fetchGitHubData(
+              username
+            );
 
-                generatedReadme =
-                    "";
 
-                try {
+          generatedReadme =
+            generateReadme(
+              user,
+              repos
+            );
 
-                    generatedReadme =
-                        await generateReadme(
-                            username
-                        );
 
-                    preview.textContent =
-                        generatedReadme;
+          readmePreview.textContent =
+            generatedReadme;
 
-                    preview.classList.remove(
-                        "hidden"
-                    );
 
-                    actions.classList.remove(
-                        "hidden"
-                    );
+          resultSection.classList.remove(
+            "hidden"
+          );
 
-                    actions.classList.add(
-                        "flex"
-                    );
 
-                    status.textContent =
-                        "README.mdを生成しました。";
+          status.textContent =
+            `@${user.login} のREADMEを生成しました。`;
 
-                } catch (
-                    error
-                ) {
 
-                    status.textContent =
-                        error.message;
+        } catch (error) {
 
-                    status.classList.add(
-                        "text-[#f85149]"
-                    );
 
-                }
+          status.textContent =
+            `Error: ${error.message}`;
 
+
+          resultSection.classList.add(
+            "hidden"
+          );
+
+
+        } finally {
+
+
+          generateBtn.disabled =
+            false;
+
+
+          generateBtn.textContent =
+            "Generate README";
+
+        }
+
+      }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Copy
+    |--------------------------------------------------------------------------
+    */
+
+    copyBtn.addEventListener(
+      "click",
+      async () => {
+
+
+        if (!generatedReadme) {
+
+          return;
+
+        }
+
+
+        try {
+
+
+          await navigator.clipboard.writeText(
+            generatedReadme
+          );
+
+
+          /*
+          |--------------------------------------------------------------------------
+          | Icon: Copy → Check
+          |--------------------------------------------------------------------------
+          */
+
+          copyIcon.classList.add(
+            "hidden"
+          );
+
+
+          checkIcon.classList.remove(
+            "hidden"
+          );
+
+
+          copyBtn.setAttribute(
+            "aria-label",
+            "Copied"
+          );
+
+
+          copyBtn.setAttribute(
+            "title",
+            "Copied"
+          );
+
+
+          setTimeout(() => {
+
+
+            copyIcon.classList.remove(
+              "hidden"
+            );
+
+
+            checkIcon.classList.add(
+              "hidden"
+            );
+
+
+            copyBtn.setAttribute(
+              "aria-label",
+              "Copy README"
+            );
+
+
+            copyBtn.setAttribute(
+              "title",
+              "Copy README"
+            );
+
+
+          }, 1500);
+
+
+        } catch (error) {
+
+
+          status.textContent =
+            "コピーに失敗しました。";
+
+        }
+
+      }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Download README.md
+    |--------------------------------------------------------------------------
+    */
+
+    downloadBtn.addEventListener(
+      "click",
+      () => {
+
+
+        if (!generatedReadme) {
+
+          return;
+
+        }
+
+
+        const blob =
+          new Blob(
+            [
+              generatedReadme
+            ],
+            {
+              type: "text/markdown;charset=utf-8"
             }
+          );
+
+
+        const url =
+          URL.createObjectURL(
+            blob
+          );
+
+
+        const link =
+          document.createElement(
+            "a"
+          );
+
+
+        link.href =
+          url;
+
+
+        link.download =
+          "README.md";
+
+
+        document.body.appendChild(
+          link
         );
 
-        copyButton.addEventListener(
-            "click",
-            async () => {
 
-                try {
+        link.click();
 
-                    await navigator.clipboard.writeText(
-                        generatedReadme
-                    );
 
-                    copyButton.innerHTML = `
-
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="h-5 w-5"
-                            aria-hidden="true"
-                        >
-
-                            <path
-                                d="m5 12 5 5L20 7"
-                            />
-
-                        </svg>
-
-                    `;
-
-                    copyButton.setAttribute(
-                        "aria-label",
-                        "Copied"
-                    );
-
-                    copyButton.setAttribute(
-                        "title",
-                        "Copied"
-                    );
-
-                    setTimeout(
-                        () => {
-
-                            copyButton.innerHTML = `
-
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    class="h-5 w-5"
-                                    aria-hidden="true"
-                                >
-
-                                    <rect
-                                        width="14"
-                                        height="14"
-                                        x="8"
-                                        y="8"
-                                        rx="2"
-                                        ry="2"
-                                    />
-
-                                    <path
-                                        d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                                    />
-
-                                </svg>
-
-                            `;
-
-                            copyButton.setAttribute(
-                                "aria-label",
-                                "Copy README"
-                            );
-
-                            copyButton.setAttribute(
-                                "title",
-                                "Copy README"
-                            );
-
-                        },
-                        2000
-                    );
-
-                } catch {
-
-                    status.textContent =
-                        "コピーに失敗しました。";
-
-                    status.classList.add(
-                        "text-[#f85149]"
-                    );
-
-                }
-
-            }
+        document.body.removeChild(
+          link
         );
 
-        downloadButton.addEventListener(
-            "click",
-            () => {
 
-                const blob =
-                    new Blob(
-                        [
-                            generatedReadme
-                        ],
-                        {
-                            type:
-                                "text/markdown;charset=utf-8"
-                        }
-                    );
-
-                const url =
-                    URL.createObjectURL(
-                        blob
-                    );
-
-                const anchor =
-                    document.createElement(
-                        "a"
-                    );
-
-                anchor.href =
-                    url;
-
-                anchor.download =
-                    "README.md";
-
-                anchor.click();
-
-                URL.revokeObjectURL(
-                    url
-                );
-
-            }
+        URL.revokeObjectURL(
+          url
         );
 
-    </script>
+      }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enter Key
+    |--------------------------------------------------------------------------
+    */
+
+    usernameInput.addEventListener(
+      "keydown",
+      event => {
+
+
+        if (
+          event.key === "Enter"
+        ) {
+
+          generateBtn.click();
+
+        }
+
+      }
+    );
+
+  </script>
 
 </body>
 </html>
